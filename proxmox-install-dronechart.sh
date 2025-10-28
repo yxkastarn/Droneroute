@@ -57,9 +57,8 @@ fi
 print_status "Proxmox-miljö detekterad"
 
 # GitHub-länkar
-GITHUB_RAW_BASE="https://raw.githubusercontent.com/yourusername/dronechart-pro/main"
-# För utveckling/test, använd en temporär URL eller lokala filer
-# I produktion ska detta peka på ett riktigt GitHub-repo
+GITHUB_RAW_BASE="https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main"
+GITHUB_HTML_URL="${GITHUB_RAW_BASE}/dronechart-viewer-pro.html"
 
 # Konfiguration
 print_header "Konfiguration"
@@ -268,16 +267,15 @@ print_status "Nginx installerad"
 WEB_ROOT="/var/www/dronechart"
 mkdir -p $WEB_ROOT
 
-# Ladda ner HTML-fil från GitHub (eller skapa lokalt för test)
-print_info "Skapar webbapplikation..."
+# Ladda ner HTML-fil från GitHub
+print_info "Laddar ner webbapplikation från GitHub..."
 
-# För tillfället skapar vi filen direkt här
-# I produktion skulle detta ladda ner från GitHub:
-# curl -o $WEB_ROOT/index.html https://raw.githubusercontent.com/yourusername/dronechart-pro/main/index.html
-
-# Skapa HTML-filen (kompakt version för att få in den i scriptet)#cat > #$WEB_ROOT/index.html << 'HTMLEOF'
-curl -o $WEB_ROOT/index.html https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/dronechart-viewer-pro.html
-
+if curl -f -o $WEB_ROOT/index.html https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/dronechart-viewer-pro.html 2>/dev/null; then
+    print_status "Webbapplikation nedladdad från GitHub"
+else
+    print_info "GitHub-nedladdning misslyckades, använder inbyggd version..."
+    # Fallback: Skapa HTML-filen lokalt om GitHub inte är tillgängligt
+cat > $WEB_ROOT/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="sv">
 <head>
