@@ -1,5 +1,5 @@
 #!/bin/bash
-#
+# test
 # Installation script för Drönarkarta Viewer Pro i Proxmox LXC
 # Detta script installerar en webbserver och konfigurerar applikationen
 # med stöd för DJI SRT-filer och videouppspelning
