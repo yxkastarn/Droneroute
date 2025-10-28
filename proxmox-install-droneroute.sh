@@ -112,33 +112,32 @@ read -p "Välj storage (standard: local-lvm): " STORAGE
 STORAGE=${STORAGE:-local-lvm}
 print_status "Storage: $STORAGE"
 
-# Template
+# Template - FÖRBÄTTRAD VERSION
 print_info "Söker efter tillgängliga templates..."
-TEMPLATES=$(pveam available | grep -E "debian-12|ubuntu-22.04|ubuntu-24.04" | awk '{print $2}')
 
-if [ -z "$TEMPLATES" ]; then
-    print_info "Inga templates listade. Söker lokala templates..."
-    TEMPLATE=$(pveam list local | grep -E "debian-12-standard" | head -1 | awk '{print $1}')
-    if [ -z "$TEMPLATE" ]; then
-        print_error "Ingen lämplig template hittad"
-        print_info "Laddar ner Debian 12 template..."
-        pveam download local debian-12-standard_12.2-1_amd64.tar.zst
-        TEMPLATE="local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
+# Kontrollera om Debian 12 template redan finns
+TEMPLATE="local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
+if ! pveam list local | grep -q "debian-12-standard_12.2-1_amd64.tar.zst"; then
+    print_info "Debian 12 template inte hittad, laddar ner..."
+    
+    # Uppdatera template-listan först
+    print_info "Uppdaterar template-lista..."
+    pveam update
+    
+    # Ladda ner Debian 12 template
+    print_info "Laddar ner Debian 12 template (detta kan ta några minuter)..."
+    pveam download local debian-12-standard_12.2-1_amd64.tar.zst
+    
+    # Verifiera att nedladdningen lyckades
+    if pveam list local | grep -q "debian-12-standard_12.2-1_amd64.tar.zst"; then
+        print_status "Debian 12 template nedladdad"
+    else
+        print_error "Kunde inte ladda ner template"
+        print_info "Prova att köra manuellt: pveam download local debian-12-standard_12.2-1_amd64.tar.zst"
+        exit 1
     fi
 else
-    echo "$TEMPLATES" | nl -w2 -s'. '
-    read -p "Välj template nummer (eller tryck Enter för Debian 12): " TEMPLATE_NUM
-    if [ -z "$TEMPLATE_NUM" ]; then
-        # Ladda ner Debian 12 om den inte finns
-        TEMPLATE="local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
-        if ! pveam list local | grep -q "debian-12-standard"; then
-            print_info "Laddar ner Debian 12 template..."
-            pveam download local debian-12-standard_12.2-1_amd64.tar.zst
-        fi
-    else
-        TEMPLATE=$(echo "$TEMPLATES" | sed -n "${TEMPLATE_NUM}p")
-        TEMPLATE="local:vztmpl/$TEMPLATE"
-    fi
+    print_status "Debian 12 template redan tillgänglig"
 fi
 
 print_status "Template: $TEMPLATE"
