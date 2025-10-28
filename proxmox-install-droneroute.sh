@@ -112,34 +112,41 @@ read -p "Välj storage (standard: local-lvm): " STORAGE
 STORAGE=${STORAGE:-local-lvm}
 print_status "Storage: $STORAGE"
 
-# Template - FÖRBÄTTRAD VERSION
+# Template - DYNAMISK VERSION
 print_info "Söker efter tillgängliga templates..."
 
-# Kontrollera om Debian 12 template redan finns
-TEMPLATE="local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
-if ! pveam list local | grep -q "debian-12-standard_12.2-1_amd64.tar.zst"; then
-    print_info "Debian 12 template inte hittad, laddar ner..."
-    
-    # Uppdatera template-listan först
-    print_info "Uppdaterar template-lista..."
-    pveam update
-    
-    # Ladda ner Debian 12 template
-    print_info "Laddar ner Debian 12 template (detta kan ta några minuter)..."
-    pveam download local debian-12-standard_12.2-1_amd64.tar.zst
-    
-    # Verifiera att nedladdningen lyckades
-    if pveam list local | grep -q "debian-12-standard_12.2-1_amd64.tar.zst"; then
-        print_status "Debian 12 template nedladdad"
-    else
-        print_error "Kunde inte ladda ner template"
-        print_info "Prova att köra manuellt: pveam download local debian-12-standard_12.2-1_amd64.tar.zst"
-        exit 1
-    fi
-else
-    print_status "Debian 12 template redan tillgänglig"
+# Uppdatera template-listan
+print_info "Uppdaterar template-lista..."
+pveam update
+
+# Sök efter Debian 12 template (dynamiskt för att hitta rätt version)
+AVAILABLE_DEBIAN=$(pveam available | grep "debian-12.*standard" | head -1 | awk '{print $2}')
+
+if [ -z "$AVAILABLE_DEBIAN" ]; then
+    print_error "Ingen Debian 12 template hittad i repository"
+    print_info "Tillgängliga templates:"
+    pveam available | grep -E "debian|ubuntu" | head -10
+    exit 1
 fi
 
+print_info "Hittade template: $AVAILABLE_DEBIAN"
+
+# Kontrollera om template redan är nedladdad
+if pveam list local | grep -q "$AVAILABLE_DEBIAN"; then
+    print_status "Template redan nedladdad"
+else
+    print_info "Laddar ner template (detta kan ta några minuter)..."
+    pveam download local "$AVAILABLE_DEBIAN"
+    
+    if [ $? -eq 0 ]; then
+        print_status "Template nedladdad"
+    else
+        print_error "Nedladdning misslyckades"
+        exit 1
+    fi
+fi
+
+TEMPLATE="local:vztmpl/$AVAILABLE_DEBIAN"
 print_status "Template: $TEMPLATE"
 
 # Resurser
