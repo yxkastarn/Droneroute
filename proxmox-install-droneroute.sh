@@ -298,7 +298,7 @@ pct exec $CTID -- bash -c "curl -L -o /var/www/droneroute/index.html https://raw
 print_status "Webbapplikation skapad"
 
 # Konfigurera Nginx
-cat > /etc/nginx/sites-available/droneroute << 'NGINXEOF'
+pct exec $CTID -- cat > /etc/nginx/sites-available/droneroute << 'NGINXEOF'
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -312,10 +312,10 @@ server {
 }
 NGINXEOF
 
-ln -sf /etc/nginx/sites-available/droneroute /etc/nginx/sites-enabled/
-rm -f /etc/nginx/sites-enabled/default
+pct exec $CTID -- ln -sf /etc/nginx/sites-available/droneroute /etc/nginx/sites-enabled/
+pct exec $CTID -- rm -f /etc/nginx/sites-enabled/default
 
-nginx -t && systemctl restart nginx && systemctl enable nginx
+pct exec $CTID -- nginx -t && systemctl restart nginx && systemctl enable nginx
 print_status "Nginx konfigurerad och startad"
 
 echo "INSTALLATION_COMPLETE"
