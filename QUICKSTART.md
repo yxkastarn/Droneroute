@@ -1,33 +1,39 @@
-# Drönarkarta Viewer Pro - Snabbstart
+# Droneroute Viewer - Snabbstart
 
 ## 🚀 Installation på Proxmox (Ett kommando!)
 
-### Snabbast - Allt-i-ett kommando:
+### ⚡ Snabbast - Direktkörning med curl:
 
 Logga in på din **Proxmox-host** via SSH och kör:
 
 ```bash
-wget https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/proxmox-install-dronechart.sh -O /tmp/install-dronechart.sh && chmod +x /tmp/install-dronechart.sh && /tmp/install-dronechart.sh
+bash <(curl -s https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-droneroute.sh)
 ```
 
-### Alternativt - Steg för steg:
+### Alternativ 1 - wget allt-i-ett:
+
+```bash
+wget https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-droneroute.sh -O /tmp/install-droneroute.sh && chmod +x /tmp/install-droneroute.sh && /tmp/install-droneroute.sh
+```
+
+### Alternativ 2 - Steg för steg:
 
 ```bash
 # Steg 1: Ladda ner installationsskriptet
-wget https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/proxmox-install-dronechart.sh
+wget https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-droneroute.sh
 
 # Steg 2: Gör det körbart
-chmod +x proxmox-install-dronechart.sh
+chmod +x proxmox-install-droneroute.sh
 
 # Steg 3: Kör installationen
-./proxmox-install-dronechart.sh
+./proxmox-install-droneroute.sh
 ```
 
 ### Steg 2: Följ instruktionerna
 
 Skriptet kommer att fråga dig om:
 - Container ID (100-999)
-- Hostname (standard: dronechart-pro)
+- Hostname (standard: droneroute)
 - Root-lösenord för containern
 - Storage (standard: local-lvm)
 - Template (standard: Debian 12)
@@ -42,7 +48,7 @@ Skriptet kommer att fråga dig om:
 Efter några minuter är allt färdigt och du får:
 - ✅ En komplett LXC-container
 - ✅ Nginx installerat och konfigurerat
-- ✅ Drönarkarta Viewer Pro installerat
+- ✅ Droneroute Viewer installerat
 - ✅ IP-adress visas för åtkomst
 
 ## 📋 Vad gör skriptet?
@@ -59,7 +65,7 @@ Efter några minuter är allt färdigt och du får:
 1. ✅ Uppdaterar paketsystemet
 2. ✅ Installerar Nginx, Curl, Certbot
 3. ✅ Skapar webbkatalog
-4. ✅ Installerar Drönarkarta Viewer Pro HTML-applikation
+4. ✅ Installerar Droneroute Viewer HTML-applikation
 5. ✅ Konfigurerar Nginx med stöd för stora videofiler (2GB)
 6. ✅ Startar och aktiverar Nginx
 7. ✅ Rapporterar tillbaka IP-adress
@@ -78,7 +84,7 @@ http://[CONTAINER-IP]
 pct enter [CONTAINER-ID]
 
 # Kör Certbot
-certbot --nginx -d dronechart.dindomän.se
+certbot --nginx -d droneroute.dindomän.se
 ```
 
 ### Testa applikationen
@@ -129,7 +135,7 @@ pct exec [CONTAINER-ID] -- tail -f /var/log/nginx/error.log
 ### Minimal installation (512MB RAM)
 ```
 Container ID: 100
-Hostname: dronechart-pro
+Hostname: droneroute
 RAM: 512
 CPU: 1
 Disk: 2
@@ -138,7 +144,7 @@ Disk: 2
 ### Rekommenderad installation (1GB RAM)
 ```
 Container ID: 100
-Hostname: dronechart-pro
+Hostname: droneroute
 RAM: 1024
 CPU: 2
 Disk: 4
@@ -147,7 +153,7 @@ Disk: 4
 ### Kraftfull installation (stora videofiler)
 ```
 Container ID: 100
-Hostname: dronechart-pro
+Hostname: droneroute
 RAM: 2048
 CPU: 4
 Disk: 8
@@ -230,7 +236,7 @@ pct exec [CONTAINER-ID] -- nginx -t
 ### Kan inte ladda upp stora filer
 Kontrollera att `client_max_body_size` är satt till 2G i Nginx-konfigurationen:
 ```bash
-pct exec [CONTAINER-ID] -- grep client_max_body_size /etc/nginx/sites-available/dronechart
+pct exec [CONTAINER-ID] -- grep client_max_body_size /etc/nginx/sites-available/droneroute
 ```
 
 ## 📦 Mallar och templates
@@ -274,8 +280,8 @@ pct restore [NY-CONTAINER-ID] /var/lib/vz/dump/vzdump-lxc-[CONTAINER-ID]-*.tar.z
 
 ### Officiella resurser:
 - **Proxmox Documentation**: https://pve.proxmox.com/wiki/Main_Page
-- **LFV Drönarkarta**: https://dronechart.lfv.se/
-- **LFV API**: https://daim.lfv.se/echarts/dronechart/API/
+- **LFV Droneroute**: https://droneroute.lfv.se/
+- **LFV API**: https://daim.lfv.se/echarts/droneroute/API/
 
 ### DJI-resurser:
 - **DJI Telemetry Overlay**: https://djitelemetryoverlay.com/

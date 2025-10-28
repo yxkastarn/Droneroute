@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Drönarkarta Viewer Pro - Proxmox Host Installation Script
+# Droneroute Viewer - Proxmox Host Installation Script
 # Detta script körs på Proxmox-hosten och skapar en komplett LXC-container
-# med Drönarkarta Viewer Pro installerat
+# med Droneroute Viewer installerat
 #
 
 set -e
@@ -39,7 +39,7 @@ echo -e "${GREEN}"
 cat << "EOF"
 ╔═══════════════════════════════════════════════════╗
 ║                                                   ║
-║      🚁 Drönarkarta Viewer Pro Installer 🚁      ║
+║      🚁 Droneroute Viewer Installer 🚁      ║
 ║                                                   ║
 ║      Automatisk LXC-installation för Proxmox     ║
 ║                                                   ║
@@ -47,6 +47,11 @@ cat << "EOF"
 EOF
 echo -e "${NC}"
 echo ""
+
+
+# GitHub-länkar
+GITHUB_RAW_BASE="https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main"
+GITHUB_HTML_URL="${GITHUB_RAW_BASE}/droneroute-viewer.html"
 
 # Kontrollera att vi kör på Proxmox
 if ! command -v pct &> /dev/null; then
@@ -57,8 +62,8 @@ fi
 print_status "Proxmox-miljö detekterad"
 
 # GitHub-länkar
-GITHUB_RAW_BASE="https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main"
-GITHUB_HTML_URL="${GITHUB_RAW_BASE}/dronechart-viewer-pro.html"
+GITHUB_RAW_BASE="https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main"
+GITHUB_HTML_URL="${GITHUB_RAW_BASE}/droneroute-viewer.html"
 
 # Konfiguration
 print_header "Konfiguration"
@@ -81,8 +86,8 @@ done
 print_status "Container ID: $CTID"
 
 # Fråga efter hostname
-read -p "Ange hostname (standard: dronechart-pro): " HOSTNAME
-HOSTNAME=${HOSTNAME:-dronechart-pro}
+read -p "Ange hostname (standard: droneroute): " HOSTNAME
+HOSTNAME=${HOSTNAME:-droneroute}
 print_status "Hostname: $HOSTNAME"
 
 # Fråga efter lösenord
@@ -233,7 +238,7 @@ print_status "Container IP: $CT_IP"
 
 # Installera applikationen i containern
 echo ""
-print_header "Installerar Drönarkarta Viewer Pro"
+print_header "Installerar Droneroute Viewer"
 echo ""
 
 # Skapa installationsskript i containern
@@ -264,13 +269,13 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y nginx curl wget net-tools cert
 print_status "Nginx installerad"
 
 # Skapa webbkatalog
-WEB_ROOT="/var/www/dronechart"
+WEB_ROOT="/var/www/droneroute"
 mkdir -p $WEB_ROOT
 
 # Ladda ner HTML-fil från GitHub
 print_info "Laddar ner webbapplikation från GitHub..."
 
-if curl -f -o $WEB_ROOT/index.html https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/dronechart-viewer-pro.html 2>/dev/null; then
+if curl -f -o $WEB_ROOT/index.html https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/droneroute-viewer.html 2>/dev/null; then
     print_status "Webbapplikation nedladdad från GitHub"
 else
     print_info "GitHub-nedladdning misslyckades, använder inbyggd version..."
@@ -281,7 +286,7 @@ cat > $WEB_ROOT/index.html << 'HTMLEOF'
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drönarkarta Viewer Pro</title>
+    <title>Droneroute Viewer</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -312,7 +317,7 @@ cat > $WEB_ROOT/index.html << 'HTMLEOF'
 </head>
 <body>
     <div id="header">
-        <h1>🚁 Drönarkarta Viewer Pro</h1>
+        <h1>🚁 Droneroute Viewer</h1>
         <div id="status">Initierar...</div>
     </div>
     <div id="map"></div>
@@ -466,11 +471,11 @@ HTMLEOF
 print_status "Webbapplikation skapad"
 
 # Konfigurera Nginx
-cat > /etc/nginx/sites-available/dronechart << 'NGINXEOF'
+cat > /etc/nginx/sites-available/droneroute << 'NGINXEOF'
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    root /var/www/dronechart;
+    root /var/www/droneroute;
     index index.html;
     server_name _;
     client_max_body_size 2G;
@@ -480,7 +485,7 @@ server {
 }
 NGINXEOF
 
-ln -sf /etc/nginx/sites-available/dronechart /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/droneroute /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 
 nginx -t && systemctl restart nginx && systemctl enable nginx
@@ -523,5 +528,5 @@ echo "   Stoppa:  pct stop $CTID"
 echo "   Logga in: pct enter $CTID"
 echo "   Ta bort: pct destroy $CTID"
 echo ""
-print_status "Tack för att du använder Drönarkarta Viewer Pro!"
+print_status "Tack för att du använder Droneroute Viewer!"
 echo ""

@@ -1,0 +1,61 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║                                                                   ║
+║               🚁 DRONEROUTE VIEWER INSTALLATION 🚁               ║
+║                                                                   ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+📦 Repository: https://github.com/yxkastarn/droneroute
+
+🚀 INSTALLATIONSKOMMANDO FÖR PROXMOX:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+bash <(curl -s https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-droneroute.sh)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 ALTERNATIVT MED WGET:
+
+wget https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-droneroute.sh -O /tmp/install-droneroute.sh && chmod +x /tmp/install-droneroute.sh && /tmp/install-droneroute.sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ VAD SKAPAS:
+  ✅ Komplett LXC-container i Proxmox
+  ✅ Nginx webbserver
+  ✅ Droneroute Viewer webbapplikation
+  ✅ SSL-stöd (valfritt, Let's Encrypt)
+  ✅ DJI SRT-filstöd för flygrutter
+  ✅ Videouppspelning synkad med GPS-data
+  ✅ LFV Drönarkarta API-integration
+
+📁 FILER ATT LADDA UPP TILL GITHUB:
+  • droneroute-viewer.html
+  • proxmox-install-droneroute.sh
+  • README.md
+  • QUICKSTART.md
+  • LICENSE (valfritt)
+
+🔗 VIKTIGA LÄNKAR EFTER PUBLICERING:
+  • Repo: https://github.com/yxkastarn/droneroute
+  • HTML: https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/droneroute-viewer.html
+  • Script: https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-droneroute.sh
+
+🎯 EFTER INSTALLATION:
+  1. Öppna webbläsare till: http://[CONTAINER-IP]
+  2. Tillåt platsåtkomst
+  3. Ladda upp DJI SRT-fil och video
+  4. Se din flygning återuppspelas på kartan!
+
+💡 TIPS:
+  • Konfigurera SSL för HTTPS (krävs för geolocation över internet)
+  • Använd DHCP för enkel nätverkskonfiguration
+  • Rekommenderat: 1GB RAM, 2 CPU cores, 4GB disk
+
+🐛 FELSÖKNING:
+  • Se loggar: pct exec [CTID] -- journalctl -u nginx -f
+  • Testa API: curl https://daim.lfv.se/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities
+  • Starta om: pct restart [CTID]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Lycka till med din Droneroute Viewer installation! 🚁
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

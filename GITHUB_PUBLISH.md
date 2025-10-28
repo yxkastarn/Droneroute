@@ -2,7 +2,7 @@
 
 ## 📦 Filer att ladda upp till GitHub
 
-Skapa ett nytt repository på GitHub med namnet: **dronechart-pro**
+Skapa ett nytt repository på GitHub med namnet: **droneroute**
 Användare: **yxkastarn**
 
 ### Filer att inkludera:
@@ -15,7 +15,7 @@ Användare: **yxkastarn**
 ### GitHub Repository-struktur:
 
 ```
-dronechart-pro/
+droneroute/
 ├── README.md
 ├── QUICKSTART.md
 ├── proxmox-install-dronechart.sh
@@ -28,7 +28,13 @@ dronechart-pro/
 När filerna är uppladdade på GitHub kan användare installera med:
 
 ```bash
-wget https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/proxmox-install-dronechart.sh -O /tmp/install-dronechart.sh && chmod +x /tmp/install-dronechart.sh && /tmp/install-dronechart.sh
+bash <(curl -s https://raw.githubusercontent.com/yxkastarn/route/refs/heads/main/proxmox-install-dronechart.sh)
+```
+
+**Alternativt med wget:**
+
+```bash
+wget https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-dronechart.sh -O /tmp/install-dronechart.sh && chmod +x /tmp/install-dronechart.sh && /tmp/install-dronechart.sh
 ```
 
 ## 📋 Steg för att publicera på GitHub
@@ -38,7 +44,7 @@ wget https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/proxmox-ins
 ```bash
 # Via GitHub web UI:
 # 1. Gå till https://github.com/new
-# 2. Repository name: dronechart-pro
+# 2. Repository name: droneroute
 # 3. Description: "Drönarkarta Viewer Pro - Visualisera DJI-flygningar med LFV API-integration"
 # 4. Public
 # 5. Lägg INTE till README, .gitignore eller license (vi lägger till egna)
@@ -49,8 +55,8 @@ wget https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/proxmox-ins
 
 ```bash
 # Klona det tomma repot
-git clone https://github.com/yxkastarn/dronechart-pro.git
-cd dronechart-pro
+git clone https://github.com/yxkastarn/droneroute.git
+cd droneroute
 
 # Kopiera filer
 cp /path/to/dronechart-viewer-pro.html .
@@ -73,9 +79,7 @@ Efter uppladdning, testa att installationen fungerar:
 
 ```bash
 # På en Proxmox-host
-wget https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/proxmox-install-dronechart.sh -O /tmp/test-install.sh
-chmod +x /tmp/test-install.sh
-# Kör sedan scriptet
+bash <(curl -s https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-dronechart.sh)
 ```
 
 ## 📝 README-innehåll
@@ -94,10 +98,11 @@ README.md innehåller:
 
 ## 🔗 Viktiga URL:er efter publicering
 
-- **Repository**: https://github.com/yxkastarn/dronechart-pro
-- **Raw HTML**: https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/dronechart-viewer-pro.html
-- **Raw Install Script**: https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/proxmox-install-dronechart.sh
-- **README**: https://github.com/yxkastarn/dronechart-pro/blob/main/README.md
+- **Repository**: https://github.com/yxkastarn/droneroute
+- **Raw HTML**: https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/dronechart-viewer-pro.html
+- **Raw Install Script**: https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-dronechart.sh
+- **README**: https://github.com/yxkastarn/droneroute/blob/main/README.md
+- **Install (curl)**: `bash <(curl -s https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-dronechart.sh)`
 
 ## 🎯 Efter publicering
 
@@ -161,7 +166,7 @@ GNU General Public License v3.0
 
 ## 🎉 Färdig checklista
 
-- [ ] Skapat GitHub repository: dronechart-pro
+- [ ] Skapat GitHub repository: droneroute
 - [ ] Laddat upp alla filer
 - [ ] Verifierat att raw URLs fungerar
 - [ ] Testat installationsskriptet
@@ -173,7 +178,7 @@ GNU General Public License v3.0
 ## 📧 Dela projektet
 
 När allt är klart kan du dela:
-- Repository URL: https://github.com/yxkastarn/dronechart-pro
+- Repository URL: https://github.com/yxkastarn/droneroute
 - Installations-kommando (se ovan)
 - Screenshots (lägg till i README)
 - Video-demo (lägg till i README)

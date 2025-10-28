@@ -1,29 +1,22 @@
-# Drönarkarta Viewer Pro - Komplett Guide
+# Droneroute Viewer - Komplett Guide
 
 ## 🚁 Översikt
-En kraftfull webbapplikation för visualisering av drönarflygningar med integration mot LFV:s Drönarkarta-API. Utvecklad för att köra i Proxmox LXC-containrar.
+En kraftfull webbapplikation för visualisering av drönarflygningar med integration mot LFV:s Droneroute-API. Utvecklad för att köra i Proxmox LXC-containrar.
 
 ## ⚡ Snabbstart - Ett kommando!
 
 **Kör detta på din Proxmox-host:**
 
 ```bash
-wget https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/proxmox-install-dronechart.sh -O /tmp/install-dronechart.sh && chmod +x /tmp/install-dronechart.sh && /tmp/install-dronechart.sh
+bash <(curl -s https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-droneroute.sh)
 ```
 
-Det är allt! Skriptet skapar automatiskt en komplett LXC-container med Drönarkarta Viewer Pro installerat.
+Det är allt! Skriptet skapar automatiskt en komplett LXC-container med Droneroute Viewer installerat.
 
-### Alternativt (steg för steg):
+### Alternativt (wget-metod):
 
 ```bash
-# Steg 1: Ladda ner installationsskriptet
-wget https://raw.githubusercontent.com/yxkastarn/dronechart-pro/main/proxmox-install-dronechart.sh
-
-# Steg 2: Gör det körbart
-chmod +x proxmox-install-dronechart.sh
-
-# Steg 3: Kör installationen
-./proxmox-install-dronechart.sh
+wget https://raw.githubusercontent.com/yxkastarn/droneroute/refs/heads/main/proxmox-install-droneroute.sh -O /tmp/install-droneroute.sh && chmod +x /tmp/install-droneroute.sh && /tmp/install-droneroute.sh
 ```
 
 Följ sedan instruktionerna på skärmen för att konfigurera din container!
@@ -32,7 +25,7 @@ Följ sedan instruktionerna på skärmen för att konfigurera din container!
 
 ### Grundfunktioner
 - ✅ **GPS-positionering**: Visa användarens position i realtid
-- ✅ **LFV Drönarkarta**: Hämta automatiskt alla restriktionsområden från LFV:s API
+- ✅ **LFV Droneroute**: Hämta automatiskt alla restriktionsområden från LFV:s API
   - CTR (Kontrollzoner)
   - TIZ (Trafikinformationszoner)
   - ATZ (Flygplatstrafikzoner)
@@ -87,15 +80,15 @@ Följ sedan instruktionerna på skärmen för att konfigurera din container!
 3. **Ladda upp båda filerna till containern**
    ```bash
    # Från Proxmox-hosten eller via SCP
-   scp dronechart-viewer-pro.html root@CONTAINER_IP:/root/
-   scp install-dronechart-pro.sh root@CONTAINER_IP:/root/
+   scp droneroute-viewer.html root@CONTAINER_IP:/root/
+   scp install-droneroute.sh root@CONTAINER_IP:/root/
    ```
 
 4. **Kör installationsskriptet**
    ```bash
    cd /root
-   chmod +x install-dronechart-pro.sh
-   ./install-dronechart-pro.sh
+   chmod +x install-droneroute.sh
+   ./install-droneroute.sh
    ```
 
 5. **Följ instruktionerna** för SSL-konfiguration (valfritt men rekommenderat)
@@ -105,7 +98,7 @@ Följ sedan instruktionerna på skärmen för att konfigurera din container!
 ```bash
 # Skapa container
 pct create 100 local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst \
-  --hostname dronechart-pro \
+  --hostname droneroute \
   --memory 1024 \
   --swap 512 \
   --cores 2 \
@@ -207,11 +200,11 @@ Installationsskriptet frågar om du vill konfigurera SSL och guidar dig genom pr
 apt-get install -y certbot python3-certbot-nginx
 
 # Uppdatera domännamn i Nginx-konfiguration
-nano /etc/nginx/sites-available/dronechart
-# Ändra "server_name _;" till "server_name dronechart.dindomän.se;"
+nano /etc/nginx/sites-available/droneroute
+# Ändra "server_name _;" till "server_name droneroute.dindomän.se;"
 
 # Få SSL-certifikat
-certbot --nginx -d dronechart.dindomän.se
+certbot --nginx -d droneroute.dindomän.se
 
 # Testa automatisk förnyelse
 certbot renew --dry-run
@@ -368,9 +361,9 @@ journalctl -u nginx -f
 
 ## 📚 Resurser
 
-### LFV Drönarkarta
-- **Produktspecifikation**: https://daim.lfv.se/echarts/dronechart/API/
-- **Webbkarta**: https://dronechart.lfv.se/
+### LFV Droneroute
+- **Produktspecifikation**: https://daim.lfv.se/echarts/droneroute/API/
+- **Webbkarta**: https://droneroute.lfv.se/
 - **Licens**: CC BY-NC-ND 4.0
 
 ### Transportstyrelsen
