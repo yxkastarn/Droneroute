@@ -293,12 +293,14 @@ mkdir -p $WEB_ROOT
 # Ladda ner HTML-fil från GitHub
 print_info "Laddar ner webbapplikation från GitHub..."
 
-pct exec $CTID -- bash -c "curl -L -o /var/www/droneroute/index.html https://raw.githubusercontent.com/yxkastarn/Droneroute/refs/heads/main/droneroute-viewer.html"
+# pct exec $CTID -- 
+bash -c "curl -L -o /var/www/droneroute/index.html https://raw.githubusercontent.com/yxkastarn/Droneroute/refs/heads/main/droneroute-viewer.html"
 
 print_status "Webbapplikation skapad"
 
 # Konfigurera Nginx
-pct exec $CTID -- cat > /etc/nginx/sites-available/droneroute << 'NGINXEOF'
+# pct exec $CTID -- 
+cat > /etc/nginx/sites-available/droneroute << 'NGINXEOF'
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -312,10 +314,13 @@ server {
 }
 NGINXEOF
 
-pct exec $CTID -- ln -sf /etc/nginx/sites-available/droneroute /etc/nginx/sites-enabled/
-pct exec $CTID -- rm -f /etc/nginx/sites-enabled/default
+#pct exec $CTID -- 
+ln -sf /etc/nginx/sites-available/droneroute /etc/nginx/sites-enabled/
+#pct exec $CTID -- 
+rm -f /etc/nginx/sites-enabled/default
 
-pct exec $CTID -- nginx -t && systemctl restart nginx && systemctl enable nginx
+#pct exec $CTID -- 
+nginx -t && systemctl restart nginx && systemctl enable nginx
 print_status "Nginx konfigurerad och startad"
 
 echo "INSTALLATION_COMPLETE"
