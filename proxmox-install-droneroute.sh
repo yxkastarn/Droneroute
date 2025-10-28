@@ -112,41 +112,54 @@ read -p "Välj storage (standard: local-lvm): " STORAGE
 STORAGE=${STORAGE:-local-lvm}
 print_status "Storage: $STORAGE"
 
-# Template - DYNAMISK VERSION
-print_info "Söker efter tillgängliga templates..."
-
-# Uppdatera template-listan
+# Template - INTERAKTIV VERSION MED MANUELLT VAL
 print_info "Uppdaterar template-lista..."
 pveam update
 
-# Sök efter Debian 12 template (dynamiskt för att hitta rätt version)
-AVAILABLE_DEBIAN=$(pveam available | grep "debian-12.*standard" | head -1 | awk '{print $2}')
+echo ""
+print_info "Visar tillgängliga Debian och Ubuntu templates:"
+echo ""
+pveam available | grep -E "debian|ubuntu" | nl -w2 -s'. '
 
-if [ -z "$AVAILABLE_DEBIAN" ]; then
-    print_error "Ingen Debian 12 template hittad i repository"
-    print_info "Tillgängliga templates:"
-    pveam available | grep -E "debian|ubuntu" | head -10
+echo ""
+read -p "Välj template nummer (eller tryck Enter för att visa alla tillgängliga): " TEMPLATE_CHOICE
+
+if [ -z "$TEMPLATE_CHOICE" ]; then
+    # Visa alla templates
+    echo ""
+    print_info "Alla tillgängliga templates:"
+    pveam available | nl -w2 -s'. '
+    echo ""
+    read -p "Välj template nummer: " TEMPLATE_CHOICE
+fi
+
+# Hämta valt template
+SELECTED_TEMPLATE=$(pveam available | sed -n "${TEMPLATE_CHOICE}p" | awk '{print $2}')
+
+if [ -z "$SELECTED_TEMPLATE" ]; then
+    print_error "Ogiltigt val"
     exit 1
 fi
 
-print_info "Hittade template: $AVAILABLE_DEBIAN"
+print_info "Valt template: $SELECTED_TEMPLATE"
 
-# Kontrollera om template redan är nedladdad
-if pveam list local | grep -q "$AVAILABLE_DEBIAN"; then
+# Kontrollera om redan nedladdad
+if pveam list local | grep -q "$SELECTED_TEMPLATE"; then
     print_status "Template redan nedladdad"
 else
     print_info "Laddar ner template (detta kan ta några minuter)..."
-    pveam download local "$AVAILABLE_DEBIAN"
+    pveam download local "$SELECTED_TEMPLATE"
     
     if [ $? -eq 0 ]; then
         print_status "Template nedladdad"
     else
         print_error "Nedladdning misslyckades"
+        print_info "Prova att välja en annan template"
         exit 1
     fi
 fi
 
-TEMPLATE="local:vztmpl/$AVAILABLE_DEBIAN"
+TEMPLATE="local:vztmpl/$SELECTED_TEMPLATE"
 print_status "Template: $TEMPLATE"
 
 # Resurser
