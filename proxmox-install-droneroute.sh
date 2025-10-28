@@ -246,7 +246,6 @@ for i in {1..30}; do
     fi
     sleep 2
 done
-
 print_status "Nätverksanslutning etablerad"
 
 # Hämta IP-adress
