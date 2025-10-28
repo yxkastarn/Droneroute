@@ -298,193 +298,193 @@ if curl -f -o $WEB_ROOT/index.html https://raw.githubusercontent.com/yxkastarn/d
 else
     print_info "GitHub-nedladdning misslyckades, använder inbyggd version..."
     # Fallback: Skapa HTML-filen lokalt om GitHub inte är tillgängligt
-        cat > $WEB_ROOT/index.html << 'HTMLEOF'
-        <!DOCTYPE html>
-        <html lang="sv">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Droneroute Viewer</title>
-            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { font-family: Arial, sans-serif; height: 100vh; display: flex; flex-direction: column; }
-                #header { background-color: #2c3e50; color: white; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-                #header h1 { font-size: 24px; margin-bottom: 5px; }
-                #status { font-size: 14px; color: #ecf0f1; }
-                #map { flex: 1; width: 100%; }
-                #controls { position: absolute; top: 80px; right: 10px; background: white; padding: 15px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1000; max-width: 320px; max-height: 80vh; overflow-y: auto; }
-                .control-group { margin-bottom: 15px; }
-                .control-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-                button { background-color: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; margin-bottom: 5px; }
-                button:hover { background-color: #2980b9; }
-                button.danger { background-color: #e74c3c; }
-                .checkbox-group { display: flex; align-items: center; margin-bottom: 8px; }
-                .checkbox-group input[type="checkbox"] { margin-right: 8px; }
-                .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; margin-bottom: 5px; }
-                .file-input-wrapper input[type=file] { position: absolute; left: -9999px; }
-                .file-input-wrapper label { display: block; padding: 10px 15px; background-color: #27ae60; color: white; text-align: center; border-radius: 5px; cursor: pointer; font-weight: normal; }
-                .file-name { font-size: 11px; color: #7f8c8d; margin-top: 3px; word-break: break-all; }
-                #videoPlayer { position: absolute; bottom: 10px; right: 10px; width: 400px; background: white; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 1000; display: none; }
-                #videoPlayer video { width: 100%; border-radius: 5px 5px 0 0; }
-                .flight-stats { background: #ecf0f1; padding: 10px; border-radius: 5px; margin-bottom: 10px; font-size: 12px; }
-                .separator { border-top: 1px solid #ecf0f1; margin: 15px 0; }
-                .loading { display: inline-block; width: 12px; height: 12px; border: 2px solid #f3f3f3; border-top: 2px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin-left: 5px; }
-                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-            </style>
-        </head>
-        <body>
-            <div id="header">
-                <h1>🚁 Droneroute Viewer</h1>
-                <div id="status">Initierar...</div>
+    cat > $WEB_ROOT/index.html << 'HTMLEOF'
+    <!DOCTYPE html>
+    <html lang="sv">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Droneroute Viewer</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: Arial, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+            #header { background-color: #2c3e50; color: white; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+            #header h1 { font-size: 24px; margin-bottom: 5px; }
+            #status { font-size: 14px; color: #ecf0f1; }
+            #map { flex: 1; width: 100%; }
+            #controls { position: absolute; top: 80px; right: 10px; background: white; padding: 15px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1000; max-width: 320px; max-height: 80vh; overflow-y: auto; }
+            .control-group { margin-bottom: 15px; }
+            .control-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+            button { background-color: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; margin-bottom: 5px; }
+            button:hover { background-color: #2980b9; }
+            button.danger { background-color: #e74c3c; }
+            .checkbox-group { display: flex; align-items: center; margin-bottom: 8px; }
+            .checkbox-group input[type="checkbox"] { margin-right: 8px; }
+            .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; margin-bottom: 5px; }
+            .file-input-wrapper input[type=file] { position: absolute; left: -9999px; }
+            .file-input-wrapper label { display: block; padding: 10px 15px; background-color: #27ae60; color: white; text-align: center; border-radius: 5px; cursor: pointer; font-weight: normal; }
+            .file-name { font-size: 11px; color: #7f8c8d; margin-top: 3px; word-break: break-all; }
+            #videoPlayer { position: absolute; bottom: 10px; right: 10px; width: 400px; background: white; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 1000; display: none; }
+            #videoPlayer video { width: 100%; border-radius: 5px 5px 0 0; }
+            .flight-stats { background: #ecf0f1; padding: 10px; border-radius: 5px; margin-bottom: 10px; font-size: 12px; }
+            .separator { border-top: 1px solid #ecf0f1; margin: 15px 0; }
+            .loading { display: inline-block; width: 12px; height: 12px; border: 2px solid #f3f3f3; border-top: 2px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin-left: 5px; }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        </style>
+    </head>
+    <body>
+        <div id="header">
+            <h1>🚁 Droneroute Viewer</h1>
+            <div id="status">Initierar...</div>
+        </div>
+        <div id="map"></div>
+        <div id="controls">
+            <div class="control-group">
+                <button id="locateBtn">📍 Hitta min position</button>
+                <button id="refreshBtn">🔄 Uppdatera data</button>
             </div>
-            <div id="map"></div>
-            <div id="controls">
-                <div class="control-group">
-                    <button id="locateBtn">📍 Hitta min position</button>
-                    <button id="refreshBtn">🔄 Uppdatera data</button>
+            <div class="separator"></div>
+            <div class="control-group">
+                <label>📂 DJI Flygrutt (.SRT):</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="srtFile" accept=".srt,.txt">
+                    <label for="srtFile">Välj SRT-fil</label>
                 </div>
-                <div class="separator"></div>
-                <div class="control-group">
-                    <label>📂 DJI Flygrutt (.SRT):</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="srtFile" accept=".srt,.txt">
-                        <label for="srtFile">Välj SRT-fil</label>
-                    </div>
-                    <div class="file-name" id="srtFileName"></div>
-                </div>
-                <div class="control-group">
-                    <label>🎥 DJI Video (.MP4):</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="videoFile" accept="video/mp4,video/mov">
-                        <label for="videoFile">Välj videofil</label>
-                    </div>
-                    <div class="file-name" id="videoFileName"></div>
-                </div>
-                <div class="control-group" id="flightStatsContainer" style="display: none;">
-                    <div class="flight-stats" id="flightStats"></div>
-                    <button id="playFlightBtn">▶️ Spela upp flygning</button>
-                    <button id="clearFlightBtn" class="danger">🗑️ Rensa flygning</button>
-                </div>
-                <div class="separator"></div>
-                <div class="control-group">
-                    <label>Kartlager (LFV):</label>
-                    <div class="checkbox-group"><input type="checkbox" id="layer-ctr" checked><label for="layer-ctr">CTR</label></div>
-                    <div class="checkbox-group"><input type="checkbox" id="layer-tiz" checked><label for="layer-tiz">TIZ</label></div>
-                    <div class="checkbox-group"><input type="checkbox" id="layer-atz" checked><label for="layer-atz">ATZ</label></div>
-                    <div class="checkbox-group"><input type="checkbox" id="layer-rsta" checked><label for="layer-rsta">Restriktioner</label></div>
-                    <div class="checkbox-group"><input type="checkbox" id="layer-danger" checked><label for="layer-danger">Farliga områden</label></div>
-                </div>
+                <div class="file-name" id="srtFileName"></div>
             </div>
-            <div id="videoPlayer">
-                <video id="droneVideo" controls></video>
-                <div id="videoControls" style="padding: 10px; background: #34495e;">
-                    <button id="syncPlayBtn">▶️ Synkad uppspelning</button>
-                    <button id="stopPlayBtn">⏹️ Stopp</button>
-                    <input type="range" id="timeline" min="0" max="100" value="0" step="0.1" style="width: 100%; margin-top: 10px;">
-                    <button id="closeVideoBtn" class="danger">✕ Stäng video</button>
+            <div class="control-group">
+                <label>🎥 DJI Video (.MP4):</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="videoFile" accept="video/mp4,video/mov">
+                    <label for="videoFile">Välj videofil</label>
                 </div>
+                <div class="file-name" id="videoFileName"></div>
             </div>
-            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-            <script>
-                const map = L.map('map').setView([59.3293, 18.0686], 6);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap', maxZoom: 19}).addTo(map);
-                let userMarker, userCircle, flightPath, flightMarker, flightData, videoElement = document.getElementById('droneVideo');
-                let isPlayingFlight = false, playbackInterval = null;
-                const layers = {
-                    ctr: L.layerGroup().addTo(map), tiz: L.layerGroup().addTo(map), atz: L.layerGroup().addTo(map),
-                    rsta: L.layerGroup().addTo(map), danger: L.layerGroup().addTo(map)
-                };
-                const layerStyles = {
-                    ctr: {color: '#e74c3c', fillOpacity: 0.2}, tiz: {color: '#f39c12', fillOpacity: 0.2},
-                    atz: {color: '#9b59b6', fillOpacity: 0.2}, rsta: {color: '#c0392b', fillOpacity: 0.3},
-                    danger: {color: '#e67e22', fillOpacity: 0.25}
-                };
-                function parseSRT(content) {
-                    const entries = [], blocks = content.trim().split('\n\n');
-                    for (const block of blocks) {
-                        const lines = block.split('\n');
-                        if (lines.length < 3) continue;
-                        const timeMatch = lines[1].match(/(\d{2}):(\d{2}):(\d{2}),(\d{3})/);
-                        if (!timeMatch) continue;
-                        const timestamp = parseInt(timeMatch[1])*3600 + parseInt(timeMatch[2])*60 + parseInt(timeMatch[3]) + parseInt(timeMatch[4])/1000;
-                        const entry = {timestamp};
-                        for (const line of lines.slice(2)) {
-                            if (line.match(/lat/i)) { const m = line.match(/([-+]?\d+\.\d+)/); if(m) entry.lat = parseFloat(m[1]); }
-                            if (line.match(/lon/i)) { const m = line.match(/([-+]?\d+\.\d+)/); if(m) entry.lng = parseFloat(m[1]); }
-                            if (line.match(/alt/i)) { const m = line.match(/(\d+\.?\d*)/); if(m) entry.altitude = parseFloat(m[1]); }
-                            if (line.match(/speed/i)) { const m = line.match(/(\d+\.?\d*)/); if(m) entry.speed = parseFloat(m[1]); }
+            <div class="control-group" id="flightStatsContainer" style="display: none;">
+                <div class="flight-stats" id="flightStats"></div>
+                <button id="playFlightBtn">▶️ Spela upp flygning</button>
+                <button id="clearFlightBtn" class="danger">🗑️ Rensa flygning</button>
+            </div>
+            <div class="separator"></div>
+            <div class="control-group">
+                <label>Kartlager (LFV):</label>
+                <div class="checkbox-group"><input type="checkbox" id="layer-ctr" checked><label for="layer-ctr">CTR</label></div>
+                <div class="checkbox-group"><input type="checkbox" id="layer-tiz" checked><label for="layer-tiz">TIZ</label></div>
+                <div class="checkbox-group"><input type="checkbox" id="layer-atz" checked><label for="layer-atz">ATZ</label></div>
+                <div class="checkbox-group"><input type="checkbox" id="layer-rsta" checked><label for="layer-rsta">Restriktioner</label></div>
+                <div class="checkbox-group"><input type="checkbox" id="layer-danger" checked><label for="layer-danger">Farliga områden</label></div>
+            </div>
+        </div>
+        <div id="videoPlayer">
+            <video id="droneVideo" controls></video>
+            <div id="videoControls" style="padding: 10px; background: #34495e;">
+                <button id="syncPlayBtn">▶️ Synkad uppspelning</button>
+                <button id="stopPlayBtn">⏹️ Stopp</button>
+                <input type="range" id="timeline" min="0" max="100" value="0" step="0.1" style="width: 100%; margin-top: 10px;">
+                <button id="closeVideoBtn" class="danger">✕ Stäng video</button>
+            </div>
+        </div>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+            const map = L.map('map').setView([59.3293, 18.0686], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap', maxZoom: 19}).addTo(map);
+            let userMarker, userCircle, flightPath, flightMarker, flightData, videoElement = document.getElementById('droneVideo');
+            let isPlayingFlight = false, playbackInterval = null;
+            const layers = {
+                ctr: L.layerGroup().addTo(map), tiz: L.layerGroup().addTo(map), atz: L.layerGroup().addTo(map),
+                rsta: L.layerGroup().addTo(map), danger: L.layerGroup().addTo(map)
+            };
+            const layerStyles = {
+                ctr: {color: '#e74c3c', fillOpacity: 0.2}, tiz: {color: '#f39c12', fillOpacity: 0.2},
+                atz: {color: '#9b59b6', fillOpacity: 0.2}, rsta: {color: '#c0392b', fillOpacity: 0.3},
+                danger: {color: '#e67e22', fillOpacity: 0.25}
+            };
+            function parseSRT(content) {
+                const entries = [], blocks = content.trim().split('\n\n');
+                for (const block of blocks) {
+                    const lines = block.split('\n');
+                    if (lines.length < 3) continue;
+                    const timeMatch = lines[1].match(/(\d{2}):(\d{2}):(\d{2}),(\d{3})/);
+                    if (!timeMatch) continue;
+                    const timestamp = parseInt(timeMatch[1])*3600 + parseInt(timeMatch[2])*60 + parseInt(timeMatch[3]) + parseInt(timeMatch[4])/1000;
+                    const entry = {timestamp};
+                    for (const line of lines.slice(2)) {
+                        if (line.match(/lat/i)) { const m = line.match(/([-+]?\d+\.\d+)/); if(m) entry.lat = parseFloat(m[1]); }
+                        if (line.match(/lon/i)) { const m = line.match(/([-+]?\d+\.\d+)/); if(m) entry.lng = parseFloat(m[1]); }
+                        if (line.match(/alt/i)) { const m = line.match(/(\d+\.?\d*)/); if(m) entry.altitude = parseFloat(m[1]); }
+                        if (line.match(/speed/i)) { const m = line.match(/(\d+\.?\d*)/); if(m) entry.speed = parseFloat(m[1]); }
+                    }
+                    if (entry.lat && entry.lng) entries.push(entry);
+                }
+                return entries;
+            }
+            document.getElementById('srtFile').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                document.getElementById('srtFileName').textContent = file.name;
+                const content = await file.text();
+                flightData = parseSRT(content);
+                if (flightData.length === 0) return alert('Ingen GPS-data hittades');
+                if (flightPath) map.removeLayer(flightPath);
+                const coords = flightData.map(e => [e.lat, e.lng]);
+                flightPath = L.polyline(coords, {color: '#2ecc71', weight: 3}).addTo(map);
+                L.marker(coords[0]).addTo(map).bindPopup('Start');
+                L.marker(coords[coords.length-1]).addTo(map).bindPopup('Slut');
+                map.fitBounds(flightPath.getBounds());
+                const duration = flightData[flightData.length-1].timestamp - flightData[0].timestamp;
+                const maxAlt = Math.max(...flightData.map(e => e.altitude||0));
+                document.getElementById('flightStats').innerHTML = `<div><strong>Varaktighet:</strong> ${Math.floor(duration/60)}m ${Math.floor(duration%60)}s</div><div><strong>Punkter:</strong> ${flightData.length}</div><div><strong>Max höjd:</strong> ${maxAlt.toFixed(1)}m</div>`;
+                document.getElementById('flightStatsContainer').style.display = 'block';
+            });
+            document.getElementById('videoFile').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                document.getElementById('videoFileName').textContent = file.name;
+                videoElement.src = URL.createObjectURL(file);
+                document.getElementById('videoPlayer').style.display = 'block';
+            });
+            document.getElementById('locateBtn').addEventListener('click', () => {
+                if (!navigator.geolocation) return;
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const lat = pos.coords.latitude, lng = pos.coords.longitude;
+                    if (userMarker) map.removeLayer(userMarker);
+                    userMarker = L.marker([lat, lng]).addTo(map).bindPopup(`Din position<br>${lat.toFixed(6)}, ${lng.toFixed(6)}`).openPopup();
+                    map.setView([lat, lng], 12);
+                });
+            });
+            async function loadAllData() {
+                const WFS = 'https://daim.lfv.se/geoserver/wfs';
+                const types = [
+                    {t: 'mais:CTR', l: 'ctr'}, {t: 'mais:TIZ', l: 'tiz'}, {t: 'mais:ATZ', l: 'atz'},
+                    {t: 'mais:RSTA', l: 'rsta', f: "LOWER='GND' OR LOWER='SFC'"}, {t: 'mais:DANGER', l: 'danger'}
+                ];
+                for (const {t, l, f} of types) {
+                    const params = new URLSearchParams({service: 'WFS', version: '2.0.0', request: 'GetFeature', typename: t, outputFormat: 'application/json', srsname: 'EPSG:4326'});
+                    if (f) params.append('CQL_FILTER', f);
+                    try {
+                        const res = await fetch(`${WFS}?${params}`);
+                        const data = await res.json();
+                        if (data.features) {
+                            layers[l].clearLayers();
+                            L.geoJSON(data, {style: layerStyles[l]}).addTo(layers[l]);
                         }
-                        if (entry.lat && entry.lng) entries.push(entry);
-                    }
-                    return entries;
+                    } catch(e) { console.error(e); }
                 }
-                document.getElementById('srtFile').addEventListener('change', async (e) => {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    document.getElementById('srtFileName').textContent = file.name;
-                    const content = await file.text();
-                    flightData = parseSRT(content);
-                    if (flightData.length === 0) return alert('Ingen GPS-data hittades');
-                    if (flightPath) map.removeLayer(flightPath);
-                    const coords = flightData.map(e => [e.lat, e.lng]);
-                    flightPath = L.polyline(coords, {color: '#2ecc71', weight: 3}).addTo(map);
-                    L.marker(coords[0]).addTo(map).bindPopup('Start');
-                    L.marker(coords[coords.length-1]).addTo(map).bindPopup('Slut');
-                    map.fitBounds(flightPath.getBounds());
-                    const duration = flightData[flightData.length-1].timestamp - flightData[0].timestamp;
-                    const maxAlt = Math.max(...flightData.map(e => e.altitude||0));
-                    document.getElementById('flightStats').innerHTML = `<div><strong>Varaktighet:</strong> ${Math.floor(duration/60)}m ${Math.floor(duration%60)}s</div><div><strong>Punkter:</strong> ${flightData.length}</div><div><strong>Max höjd:</strong> ${maxAlt.toFixed(1)}m</div>`;
-                    document.getElementById('flightStatsContainer').style.display = 'block';
+            }
+            document.getElementById('refreshBtn').addEventListener('click', loadAllData);
+            document.querySelectorAll('[id^="layer-"]').forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    const l = e.target.id.replace('layer-', '');
+                    e.target.checked ? layers[l].addTo(map) : map.removeLayer(layers[l]);
                 });
-                document.getElementById('videoFile').addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    document.getElementById('videoFileName').textContent = file.name;
-                    videoElement.src = URL.createObjectURL(file);
-                    document.getElementById('videoPlayer').style.display = 'block';
-                });
-                document.getElementById('locateBtn').addEventListener('click', () => {
-                    if (!navigator.geolocation) return;
-                    navigator.geolocation.getCurrentPosition((pos) => {
-                        const lat = pos.coords.latitude, lng = pos.coords.longitude;
-                        if (userMarker) map.removeLayer(userMarker);
-                        userMarker = L.marker([lat, lng]).addTo(map).bindPopup(`Din position<br>${lat.toFixed(6)}, ${lng.toFixed(6)}`).openPopup();
-                        map.setView([lat, lng], 12);
-                    });
-                });
-                async function loadAllData() {
-                    const WFS = 'https://daim.lfv.se/geoserver/wfs';
-                    const types = [
-                        {t: 'mais:CTR', l: 'ctr'}, {t: 'mais:TIZ', l: 'tiz'}, {t: 'mais:ATZ', l: 'atz'},
-                        {t: 'mais:RSTA', l: 'rsta', f: "LOWER='GND' OR LOWER='SFC'"}, {t: 'mais:DANGER', l: 'danger'}
-                    ];
-                    for (const {t, l, f} of types) {
-                        const params = new URLSearchParams({service: 'WFS', version: '2.0.0', request: 'GetFeature', typename: t, outputFormat: 'application/json', srsname: 'EPSG:4326'});
-                        if (f) params.append('CQL_FILTER', f);
-                        try {
-                            const res = await fetch(`${WFS}?${params}`);
-                            const data = await res.json();
-                            if (data.features) {
-                                layers[l].clearLayers();
-                                L.geoJSON(data, {style: layerStyles[l]}).addTo(layers[l]);
-                            }
-                        } catch(e) { console.error(e); }
-                    }
-                }
-                document.getElementById('refreshBtn').addEventListener('click', loadAllData);
-                document.querySelectorAll('[id^="layer-"]').forEach(cb => {
-                    cb.addEventListener('change', (e) => {
-                        const l = e.target.id.replace('layer-', '');
-                        e.target.checked ? layers[l].addTo(map) : map.removeLayer(layers[l]);
-                    });
-                });
-                loadAllData();
-                setTimeout(() => document.getElementById('locateBtn').click(), 500);
-            </script>
-        </body>
-        </html>
-        HTMLEOF
+            });
+            loadAllData();
+            setTimeout(() => document.getElementById('locateBtn').click(), 500);
+        </script>
+    </body>
+    </html>
+    HTMLEOF
 
 print_status "Webbapplikation skapad"
 
