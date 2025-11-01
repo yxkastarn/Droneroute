@@ -269,7 +269,19 @@
         <div class="separator"></div>
         
         <div class="control-group">
-            <label>Kartlager (LFV):</label>
+            <label>🌍 OpenAIP Luftrum (Europa):</label>
+            <button id="loadOpenAIPBtn">📥 Ladda luftrumsdata</button>
+            <div id="openAIPStatus" style="font-size: 12px; margin-top: 5px; color: #7f8c8d;"></div>
+            <div class="checkbox-group" style="margin-top: 10px;">
+                <input type="checkbox" id="layer-openaip" checked>
+                <label for="layer-openaip">Visa OpenAIP luftrum</label>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+        
+        <div class="control-group">
+            <label>Kartlager (LFV Sverige):</label>
             <div class="checkbox-group">
                 <input type="checkbox" id="layer-ctr" checked>
                 <label for="layer-ctr">CTR (Kontrollzoner)</label>
@@ -355,7 +367,8 @@
             tiz: L.layerGroup().addTo(map),
             atz: L.layerGroup().addTo(map),
             rsta: L.layerGroup().addTo(map),
-            danger: L.layerGroup().addTo(map)
+            danger: L.layerGroup().addTo(map),
+            openaip: L.layerGroup().addTo(map)
         };
 
         const layerStyles = {
