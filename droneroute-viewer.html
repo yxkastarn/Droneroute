@@ -68,7 +68,6 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.15);
             cursor: pointer;
         }
-        }
         .control-group {
             margin-bottom: 15px;
         }
@@ -391,7 +390,7 @@
                 if (lines.length < 3) continue;
                 
                 const timeLine = lines[1];
-                const dataLines = lines.slice(2);
+                const dataLines = lines.slice(2).join(' ');
                 
                 // Parse timestamp
                 const timeMatch = timeLine.match(/(\d{2}):(\d{2}):(\d{2}),(\d{3})/);
@@ -405,35 +404,22 @@
                 
                 const entry = { timestamp };
                 
-                // Parse data
-                for (const line of dataLines) {
-                    const parts = line.split(/[:\s]+/);
-                    
-                    if (line.includes('Latitude') || line.includes('latitude')) {
-                        const latMatch = line.match(/([-+]?\d+\.\d+)/);
-                        if (latMatch) entry.lat = parseFloat(latMatch[1]);
-                    }
-                    if (line.includes('Longitude') || line.includes('longitude')) {
-                        const lngMatch = line.match(/([-+]?\d+\.\d+)/);
-                        if (lngMatch) entry.lng = parseFloat(lngMatch[1]);
-                    }
-                    if (line.includes('Altitude') || line.includes('altitude')) {
-                        const altMatch = line.match(/(\d+\.?\d*)/);
-                        if (altMatch) entry.altitude = parseFloat(altMatch[1]);
-                    }
-                    if (line.includes('Speed') || line.includes('speed')) {
-                        const speedMatch = line.match(/(\d+\.?\d*)/);
-                        if (speedMatch) entry.speed = parseFloat(speedMatch[1]);
-                    }
-                    if (line.includes('Distance') || line.includes('distance')) {
-                        const distMatch = line.match(/(\d+\.?\d*)/);
-                        if (distMatch) entry.distance = parseFloat(distMatch[1]);
-                    }
-                    if (line.includes('Hdg') || line.includes('heading')) {
-                        const hdgMatch = line.match(/(\d+)/);
-                        if (hdgMatch) entry.heading = parseInt(hdgMatch[1]);
-                    }
-                }
+                // Parse DJI SRT format: [latitude: 58.124838] [longitude: 16.241909] [rel_alt: 0.000 abs_alt: 66.397]
+                const latMatch = dataLines.match(/\[latitude:\s*([-+]?\d+\.\d+)\]/);
+                if (latMatch) entry.lat = parseFloat(latMatch[1]);
+                
+                const lngMatch = dataLines.match(/\[longitude:\s*([-+]?\d+\.\d+)\]/);
+                if (lngMatch) entry.lng = parseFloat(lngMatch[1]);
+                
+                const relAltMatch = dataLines.match(/\[rel_alt:\s*([-+]?\d+\.\d+)/);
+                if (relAltMatch) entry.altitude = parseFloat(relAltMatch[1]);
+                
+                const absAltMatch = dataLines.match(/abs_alt:\s*([-+]?\d+\.\d+)\]/);
+                if (absAltMatch) entry.absAltitude = parseFloat(absAltMatch[1]);
+                
+                // Try to get speed if available (not in the example, but might be in other DJI files)
+                const speedMatch = dataLines.match(/\[speed:\s*([-+]?\d+\.\d+)\]/);
+                if (speedMatch) entry.speed = parseFloat(speedMatch[1]);
                 
                 if (entry.lat && entry.lng) {
                     entries.push(entry);
@@ -759,6 +745,115 @@
             return totalFeatures;
         }
 
+        // OpenAIP Functions
+        async function loadOpenAIPAirspaces() {
+            const statusEl = document.getElementById('openAIPStatus');
+            statusEl.innerHTML = 'Laddar luftrumsdata... <span class="loading"></span>';
+            
+            // Get current map bounds
+            const bounds = map.getBounds();
+            const bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
+            
+            try {
+                // OpenAIP API endpoint for airspaces
+                // Note: This uses the public API - for production, consider proper authentication
+                const url = `https://api.core.openaip.net/api/airspaces?bbox=${bbox}&limit=500`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Clear existing OpenAIP layer
+                layers.openaip.clearLayers();
+                
+                let count = 0;
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach(airspace => {
+                        if (airspace.geometry && airspace.geometry.coordinates) {
+                            // Convert OpenAIP geometry to GeoJSON
+                            const geoJson = {
+                                type: 'Feature',
+                                geometry: airspace.geometry,
+                                properties: airspace
+                            };
+                            
+                            // Determine style based on airspace type
+                            let style = {
+                                color: '#3498db',
+                                fillColor: '#3498db',
+                                fillOpacity: 0.15,
+                                weight: 2
+                            };
+                            
+                            // Color coding for different airspace types
+                            const type = (airspace.type || '').toLowerCase();
+                            if (type.includes('prohibited') || type.includes('p')) {
+                                style.color = '#c0392b';
+                                style.fillColor = '#c0392b';
+                                style.fillOpacity = 0.3;
+                            } else if (type.includes('restricted') || type.includes('r')) {
+                                style.color = '#e67e22';
+                                style.fillColor = '#e67e22';
+                                style.fillOpacity = 0.25;
+                            } else if (type.includes('danger') || type.includes('d')) {
+                                style.color = '#f39c12';
+                                style.fillColor = '#f39c12';
+                                style.fillOpacity = 0.2;
+                            } else if (type.includes('ctr')) {
+                                style.color = '#9b59b6';
+                                style.fillColor = '#9b59b6';
+                                style.fillOpacity = 0.15;
+                            }
+                            
+                            const layer = L.geoJSON(geoJson, {
+                                style: style,
+                                onEachFeature: (feature, layer) => {
+                                    const props = feature.properties;
+                                    let popupContent = `<strong>${props.name || 'Luftrum'}</strong><br>`;
+                                    popupContent += `<strong>Typ:</strong> ${props.type || 'N/A'}<br>`;
+                                    popupContent += `<strong>Klass:</strong> ${props.class || 'N/A'}<br>`;
+                                    
+                                    if (props.lowerLimit) {
+                                        popupContent += `<strong>Undre gräns:</strong> ${props.lowerLimit.value} ${props.lowerLimit.unit}<br>`;
+                                    }
+                                    if (props.upperLimit) {
+                                        popupContent += `<strong>Övre gräns:</strong> ${props.upperLimit.value} ${props.upperLimit.unit}<br>`;
+                                    }
+                                    if (props.activity) {
+                                        popupContent += `<strong>Aktivitet:</strong> ${props.activity}<br>`;
+                                    }
+                                    
+                                    layer.bindPopup(popupContent);
+                                }
+                            });
+                            
+                            layers.openaip.addLayer(layer);
+                            count++;
+                        }
+                    });
+                    
+                    statusEl.textContent = `✓ Laddat ${count} luftrumsområden från OpenAIP`;
+                    statusEl.style.color = '#27ae60';
+                } else {
+                    statusEl.textContent = 'Inga luftrumsområden hittades i detta område';
+                    statusEl.style.color = '#f39c12';
+                }
+                
+            } catch (error) {
+                console.error('Fel vid laddning av OpenAIP data:', error);
+                statusEl.textContent = '⚠ Kunde inte ladda OpenAIP data. Försök igen senare.';
+                statusEl.style.color = '#e74c3c';
+            }
+        }
+
         function locateUser() {
             const statusEl = document.getElementById('status');
             statusEl.innerHTML = 'Söker position... <span class="loading"></span>';
@@ -840,6 +935,7 @@
 
         document.getElementById('locateBtn').addEventListener('click', locateUser);
         document.getElementById('refreshBtn').addEventListener('click', loadAllData);
+        document.getElementById('loadOpenAIPBtn').addEventListener('click', loadOpenAIPAirspaces);
 
         loadAllData();
         setTimeout(locateUser, 500);
