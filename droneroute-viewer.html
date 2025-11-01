@@ -201,9 +201,44 @@
             padding: 5px;
             font-size: 12px;
         }
+        .speed-controls {
+            display: flex;
+            gap: 3px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+        .speed-controls button {
+            flex: 1;
+            padding: 5px;
+            font-size: 11px;
+            min-width: 50px;
+        }
+        .speed-controls button.active {
+            background-color: #27ae60;
+        }
         #timeline {
             width: 100%;
             margin-top: 10px;
+            cursor: pointer;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .status-indicator.green {
+            background-color: #27ae60;
+            box-shadow: 0 0 5px #27ae60;
+        }
+        .status-indicator.red {
+            background-color: #e74c3c;
+            box-shadow: 0 0 5px #e74c3c;
+        }
+        .status-indicator.gray {
+            background-color: #95a5a6;
         }
         .flight-stats {
             background: #ecf0f1;
@@ -268,7 +303,7 @@
         <div class="separator"></div>
         
         <div class="control-group">
-            <label>🌍 OpenAIP Luftrum (Europa):</label>
+            <label>🌍 OpenAIP Luftrum (Europa): <span class="status-indicator gray" id="openAIPIndicator"></span></label>
             <button id="loadOpenAIPBtn">📥 Ladda luftrumsdata</button>
             <div id="openAIPStatus" style="font-size: 12px; margin-top: 5px; color: #7f8c8d;"></div>
             <div class="checkbox-group" style="margin-top: 10px;">
@@ -310,6 +345,13 @@
             <div class="playback-controls">
                 <button id="syncPlayBtn">▶️ Synkad uppspelning</button>
                 <button id="stopPlayBtn">⏹️ Stopp</button>
+            </div>
+            <div class="speed-controls">
+                <button class="speed-btn" data-speed="0.25">0.25x</button>
+                <button class="speed-btn" data-speed="0.5">0.5x</button>
+                <button class="speed-btn active" data-speed="1">1x</button>
+                <button class="speed-btn" data-speed="1.5">1.5x</button>
+                <button class="speed-btn" data-speed="2">2x</button>
             </div>
             <input type="range" id="timeline" min="0" max="100" value="0" step="0.1">
             <button id="closeVideoBtn" class="danger">✕ Stäng video</button>
@@ -748,20 +790,23 @@
         // OpenAIP Functions
         async function loadOpenAIPAirspaces() {
             const statusEl = document.getElementById('openAIPStatus');
+            const indicator = document.getElementById('openAIPIndicator');
             statusEl.innerHTML = 'Laddar luftrumsdata... <span class="loading"></span>';
+            indicator.className = 'status-indicator gray';
             
             // Get current map bounds
             const bounds = map.getBounds();
             const bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
             
             try {
-                // OpenAIP API endpoint for airspaces
-                // Note: This uses the public API - for production, consider proper authentication
+                // OpenAIP API endpoint for airspaces - using public endpoint
+                // Note: OpenAIP's public API might require authentication or have rate limits
                 const url = `https://api.core.openaip.net/api/airspaces?bbox=${bbox}&limit=500`;
                 
                 const response = await fetch(url, {
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
                 
@@ -842,15 +887,18 @@
                     
                     statusEl.textContent = `✓ Laddat ${count} luftrumsområden från OpenAIP`;
                     statusEl.style.color = '#27ae60';
+                    indicator.className = 'status-indicator green';
                 } else {
                     statusEl.textContent = 'Inga luftrumsområden hittades i detta område';
                     statusEl.style.color = '#f39c12';
+                    indicator.className = 'status-indicator green';
                 }
                 
             } catch (error) {
                 console.error('Fel vid laddning av OpenAIP data:', error);
                 statusEl.textContent = '⚠ Kunde inte ladda OpenAIP data. Försök igen senare.';
                 statusEl.style.color = '#e74c3c';
+                indicator.className = 'status-indicator red';
             }
         }
 
@@ -932,6 +980,59 @@
                 }
             });
         });
+
+        // Video speed controls
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const speed = parseFloat(e.target.dataset.speed);
+                videoElement.playbackRate = speed;
+                
+                // Update active button
+                document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+
+        // Timeline slider interaction - seek video on drag
+        const timeline = document.getElementById('timeline');
+        timeline.addEventListener('input', (e) => {
+            if (videoElement.src && videoElement.readyState >= 2) {
+                const time = (e.target.value / 100) * videoElement.duration;
+                videoElement.currentTime = time;
+                
+                // Update drone position if flight data is loaded
+                if (flightData && flightData.length > 0 && flightMarker) {
+                    const index = Math.floor((e.target.value / 100) * (flightData.length - 1));
+                    const entry = flightData[index];
+                    if (entry && entry.lat && entry.lng) {
+                        flightMarker.setLatLng([entry.lat, entry.lng]);
+                        const popup = `
+                            <strong>Flygposition</strong><br>
+                            Höjd: ${(entry.altitude || 0).toFixed(1)} m<br>
+                            Hastighet: ${(entry.speed || 0).toFixed(1)} km/h<br>
+                            Tid: ${formatTime(entry.timestamp)}
+                        `;
+                        flightMarker.bindPopup(popup).openPopup();
+                    }
+                }
+            }
+        });
+
+        // Update timeline as video plays
+        videoElement.addEventListener('timeupdate', () => {
+            if (videoElement.duration) {
+                const progress = (videoElement.currentTime / videoElement.duration) * 100;
+                timeline.value = progress;
+            }
+        });
+
+        // Helper function to format time
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
 
         document.getElementById('locateBtn').addEventListener('click', locateUser);
         document.getElementById('refreshBtn').addEventListener('click', loadAllData);
