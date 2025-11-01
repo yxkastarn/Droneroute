@@ -47,6 +47,27 @@
             max-width: 320px;
             max-height: 80vh;
             overflow-y: auto;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+        #controls.hide {
+            transform: translateY(-120%) scaleY(0.8);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #toggleMenuBtn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1100;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 16px;
+            font-size: 18px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            cursor: pointer;
+        }
         }
         .control-group {
             margin-bottom: 15px;
@@ -210,10 +231,11 @@
         <div id="status">Initierar...</div>
     </div>
     
+    <button id="toggleMenuBtn" title="Visa/dölj meny">☰</button>
     <div id="map"></div>
-    
+
     <div id="controls">
-        <div class="control-group">
+    <div class="control-group">
             <button id="locateBtn">📍 Hitta min position</button>
             <button id="refreshBtn">🔄 Uppdatera data</button>
         </div>
@@ -229,7 +251,7 @@
             <div class="file-name" id="srtFileName"></div>
         </div>
 
-        <div class="control-group">
+    <div class="control-group">
             <label>🎥 DJI Video (.MP4):</label>
             <div class="file-input-wrapper">
                 <input type="file" id="videoFile" accept="video/mp4,video/mov">
@@ -290,6 +312,27 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const controls = document.getElementById('controls');
+        const toggleMenuBtn = document.getElementById('toggleMenuBtn');
+        let menuVisible = true;
+        toggleMenuBtn.addEventListener('click', () => {
+            menuVisible = !menuVisible;
+            if (menuVisible) {
+                controls.classList.remove('hide');
+                toggleMenuBtn.textContent = '☰';
+            } else {
+                controls.classList.add('hide');
+                toggleMenuBtn.textContent = '🗖';
+            }
+        });
+        // För mobila enheter, dölj menyn automatiskt vid start
+        if (/iPhone|Android|Mobile/i.test(navigator.userAgent)) {
+            menuVisible = false;
+            controls.classList.add('hide');
+            toggleMenuBtn.textContent = '🗖';
+        }
+    </script>
     <script>
         const map = L.map('map').setView([59.3293, 18.0686], 6);
         
